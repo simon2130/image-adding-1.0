@@ -1,0 +1,244 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ባለታሪኩን ይገምቱ</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #d3d497;
+            color: #5c3e1a;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+        }
+        .container {
+            max-width: 800px;
+            width: 100%;
+            text-align: center;
+            background: #fff;
+            border: 2px solid #cc8400;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+        .question-selector {
+            margin-bottom: 20px;
+        }
+        button {
+            background-color: #ffa500;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            margin: 5px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+        button:hover {
+            background-color: #cc8400;
+        }
+        .image-container {
+            display: none;
+            margin-bottom: 20px;
+        }
+        .images {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 10px;
+        }
+        .images img {
+            max-width: 30%;
+            height: auto;
+        }
+        .timer {
+            font-size: 40px;
+            font-weight: bold;
+            color: #d2691e;
+            margin: 20px auto;
+            width: 80px;
+            height: 80px;
+            border: 3px solid #d2691e;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        .answer {
+            display: none;
+            font-size: 20px;
+            font-weight: bold;
+            margin-top: 10px;
+        }
+        @media (max-width: 768px) {
+            .images img {
+                max-width: 28%;
+            }
+            .timer {
+                width: 60px;
+                height: 60px;
+                font-size: 30px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>ባለታሪኩን ይገምቱ</h1>
+        <div class="question-selector">
+            <label for="question">ጥያቄ ቁጥር ስንት ይሁንልዎ:</label>
+            <select id="question">
+                <script>
+                    for (let i = 1; i <= 75; i++) {
+                        document.write(`<option value="${i}">ጥያቄ ቁጥር ${i}</option>`);
+                    }
+                </script>
+            </select>
+            <button id="next">ቀጥል</button>
+        </div>
+        <div class="image-container" id="image-container">
+            <div class="images" id="images"></div>
+            <div class="timer" id="timer">15</div>
+            <div class="answer" id="answer"></div>
+        </div>
+    </div>
+
+    <script>
+        const questions = [
+            { images: ['1a.png', '1b.png'], answer: 'መዝሙረኛው ቅዱስ ዳዊት' },
+            { images: ['2a.png', '2b.png'], answer: 'ሊቀ ነቢያት ቅዱስ ሙሴ' },
+            { images: ['3a.png', '3b.png'], answer: 'ልበ ደንዳናው ፈርዖን' },
+            { images: ['4a.png', '4b.png'], answer: 'በዓታ ለማርያም(የእመቤታችን ለቤተ መቅደስ መሰጠት)' },
+            { images: ['5a.png', '5b.png', '5c.png'], answer: 'አዳም አና ሔዋን' },
+            { images: ['6a.png', '6b.png'], answer: 'ሚልኮል' },
+            { images: ['7a.png', '7b.png', '7c.png'], answer: 'ሊቀ ነቢያት ቅዱስ ሙሴ' },
+            { images: ['8a.png', '8b.png'], answer: 'ስብከት' },
+            { images: ['9a.png', '9b.png', '9c.png'], answer: 'ሠልስቱ ደቂቅ ወይም ቅዱስ ገብርኤል' },
+            { images: ['10a.png','10b.png'], answer: 'አልጋ ቁራኛ የነበረው መጻጉዕ ' },
+            { images: ['11a.png', '11b.png', '11c.png'], answer: 'እመቤታችን ቅድስት ድንግል ማርያም' },
+            { images: ['12a.png', '12b.png'], answer: 'ሊቀ ነቢያት ቅዱስ ሙሴ ወደ እባብ የቀየረው በትር' },
+            { images: ['13a.png', '13b.png', '13c.png'], answer: 'አቀንቃኟ ሔሮድያዳ ' },
+            { images: ['14a.png', '14b.png', '14c.png', '14d.png'], answer: '፭ቱ ልባሞች ሰርገኛው ሲመጣ ዘይት እና መብራቱን ይዘው የጠበቁት' },
+            { images: ['15a.png', '15b.png', '15c.png'], answer: 'የኖሕ መርከብ ' },
+            { images: ['16a.png', '16b.png', '16c.png'], answer: 'የኖሕ ቃልኪዳን' },
+            { images: ['17a.png', '17b.png', '17c.png'], answer: 'ነቢዩ ዮናስ(የነነዌ ህዝብ የሶስት ቀን ሱባኤ)' },
+            { images: ['18a.png', '18b.png', '18c.png'], answer: 'ኢትዮጵያዊው ጻድቅ አቡነ ተክለ ሐይማኖት' },
+            { images: ['19a.png', '19b.png', '19c.png'], answer: 'ሆሳዕና በአርያም' },
+            { images: ['20a.png', '20b.png', '20c.png'], answer: 'ዘካሪያስ እና ኤልሳቤጥ' },
+            { images: ['21a.png', '21b.png', '21c.png'], answer: 'ፈጣሬ ኲሉ ዓለም እግዚአብሔር' },
+            { images: ['22a.png', '22b.png', '22c.png'], answer: 'በልሐም እና አህያው' },
+            { images: ['23a.png', '23b.png', '23c.png'], answer: 'ከ፬ቱ ወንጌላት የአንዱ ጸሐፊ የሆነው ቅዱስ ሉቃስ' },
+            { images: ['24a.png', '24b.png',], answer: 'መልዐኩ ቅዱስ ሩፋኤል' },
+            { images: ['25a.png', '25b.png', '25c.png'], answer: 'ሰብዐ ሠገል' },
+            { images: ['26a.png', '26b.png', '26c.png'], answer: 'ትዕግስተኛው ቅዱስ ኢዮብ' },
+            { images: ['27a.png', '27b.png', '27c.png'], answer: 'ሎጥ' },
+            { images: ['28a.png', '28b.png', '28c.png'], answer: 'አልዐዛር' },
+            { images: ['29a.png', '29b.png', '29c.png'], answer: 'ሳምራዊቷ ሴት' },
+            { images: ['30a.png', '30b.png', '30c.png'], answer: 'የእመቤታችን ቅድስት ድንግል ማርያም ስደት' },
+            { images: ['31a.png', '31b.png',], answer: 'ቅዱስ ዮሴፍ' },
+            { images: ['32a.png', '32b.png', '32c.png'], answer: 'ኢትዮጵያዊው ጃንደረባ' },
+            { images: ['33a.png', '33b.png', '33c.png'], answer: 'ቀራንዮ ጎልጎታ' },
+            { images: ['34a.png', '34b.png', '34c.png'], answer: 'መላዕክት ሲወጡባት እና ሲወርዱባት የያዕቆብ በህልሙ ያያት መሰላል' },
+            { images: ['35a.png', '35b.png', '35c.png'], answer: 'ወንጌላዊው ቅዱስ ጴጥሮስ(ዶሮ ሦስት ጊዜ ሳይጮህ ትክደኛለህ)' },
+            { images: ['36a.png', '36b.png',], answer: 'ከዳተኛው ይሁዳ' },
+            { images: ['37a.png', '37b.png',], answer: 'ሶምሶን' },
+            { images: ['38a.png', '38b.png', '38c.png'], answer: 'ፈጣሪውን ፈልጎ ያገኘው አብርሐም' },
+            { images: ['39a.png', '39b.png', '39c.png'], answer: 'ቅድስት ሳራ' },
+            { images: ['40a.png', '40b.png', '40c.png'], answer: 'በርጠሚዮስ' },
+            { images: ['41a.png', '41b.png', ], answer: 'ምስጢረ ተክሊል' },
+            { images: ['42a.png', '42b.png', '42c.png'], answer: 'ቅድስት ሥላሴ' },
+            { images: ['43a.png', '43b.png', ], answer: 'ነቢዩ ዳንኤል' },
+            { images: ['44a.png', '44b.png', ], answer: 'ሰማዕቱ ቅዱስ ጊዮርጊስ' },           
+            { images: ['45a.png', '45b.png', '45c.png'], answer: 'እዝራ ሱቱኤል' },           
+            { images: ['46a.png', '46b.png', '46c.png'], answer: 'መግደላዊት ማርያም' },           
+            { images: ['47a.png', '47b.png', ], answer: 'ሱራፌል ወኪሩቤል' },           
+            { images: ['48a.png', '48b.png', '48c.png'], answer: 'ቀዳሜ ሰማዕት ቅዱስ እስጢፋኖስ' },           
+            { images: ['49a.png', '49b.png', '49c.png'], answer: 'ቅድስት ኤልሳቤጥ' },           
+            { images: ['50a.png', '50b.png', '50c.png'], answer: 'የምሽት ተማሪው ኒቆዲሞስ ' },           
+            { images: ['51a.png', '51b.png', '51C.png.png'], answer: 'ቅዱስ ቶማስ'},
+            { images: ['52a.png', '52b.png', '52c.png'], answer: 'ዮሐንስ አፈወርቅ'},
+            { images: ['53b.jpg', '53a.jpg', ''], answer: 'የወደቀው ፲ኛው መልዓክ ሳጥናኤል'},
+            { images: ['54a.png', '54b.png', '54c.png'], answer: 'መጽሐፈ ሔኖክ'},
+            { images: ['55a.png', '55b.png', '55c.png'], answer: 'ወንጌላዊው ቅዱስ ዮሐንስ'},
+            { images: ['56a.png', '56b.png', ''], answer: 'ወንጌላዊው ቅዱስ ማርቆስ'},
+            { images: ['57a.png', '57b.png', '57c.png'], answer: 'የሙሴ እህት ማርያም'},
+            { images: ['58a.png', '58b.png', ''], answer: 'ብኩርናውን በምስር የሸጠው ኤሳው'},
+            { images: ['59a.png', '59b.png', '59c.png'], answer: 'ልደተ ክርስቶስ'},
+            { images: ['60a.png', '60b.png', ''], answer: 'ደሊላ'},
+            { images: ['61a.png', '61b.png', '61c.png'], answer: 'መጥምቀ መለኮት ቅዱስ ዮሐንስ'},
+            { images: ['62a.png', '62b.png', '62c.png'], answer: 'ቃና ዘገሊላ'},
+            { images: ['63a.jpg', '63b.jpg', ''], answer: 'በዓለ ጰራቅሊጦስ'},
+            { images: ['64a.png', '64b.png', ''], answer: 'ጌቴሴማኒ'},
+            { images: ['65a.png', '65b.png', '65c.png'], answer: 'ትዕማር'},
+            { images: ['66a.png', '66B.png', ''], answer: 'ነቢዩ ኤልያስ'},
+            { images: ['67A.png', '67B.png', '67C.png'], answer: 'የኦሪዮን ባለቤት ቤርሳቤህ'},
+            { images: ['68A.png', '68B.png', ''], answer: 'አስቴር'},
+            { images: ['69A.png', '69B.png', ''], answer: 'ቅዱስ ያሬድ'},
+            { images: ['70A.png', '70B.png', ''], answer: 'ደብረ ዘይት'},
+            { images: ['71A.png', '71B.png', '71C.png'], answer: 'የካህኑ ኤሊ ልጆች አፍኒን እና ፊንሐስ'},
+            { images: ['72A.png', '72B.png', ''], answer: 'ቀራጭ የነበረው ወንጌላዊው ቅዱስ ማቴዎስ'},
+            { images: ['73A.png', '73B.png', '73C.png'], answer: 'አቤል እና ቃየል'},
+            { images: ['74A.png', '74B.png', ''], answer: 'ቂርቆስ ወኢየሉጣ'},
+            { images: ['75A.png', '75B.png', '75C.png'], answer: 'ንጉስ ሶሎሞን'}
+        ];          
+
+        const specialQuestions = [5, 7, 9, 11, 13, 14, 15, 16, 17, 18, 19, 20, 21, 22, 23, 25, 26, 27, 28, 29, 30, 32, 33, 34, 35, 38, 39, 40, 42, 45, 46, 48, 49, 50, 51, 52, 54, 55, 57, 59, 61, 62, 65, 67, 71, 73, 75];
+        const nextButton = document.getElementById('next');
+        const questionSelector = document.getElementById('question');
+        const imageContainer = document.getElementById('image-container');
+        const imagesDiv = document.getElementById('images');
+        const timerElement = document.getElementById('timer');
+        const answerElement = document.getElementById('answer');
+
+        let timer;
+        function startTimer() {
+            let timeLeft = 15;
+            timerElement.textContent = timeLeft;
+            timer = setInterval(() => {
+                timeLeft--;
+                timerElement.textContent = timeLeft;
+                if (timeLeft === 0) {
+                    clearInterval(timer);
+                    revealAnswer();
+                }
+            }, 1000);
+        }
+
+        function revealAnswer() {
+            answerElement.style.display = 'block';
+            setTimeout(() => {
+                location.reload();
+            }, 3000);
+        }
+
+        nextButton.addEventListener('click', () => {
+            clearInterval(timer);
+            const selectedQuestion = parseInt(questionSelector.value, 10);
+            const question = questions[selectedQuestion - 1];
+
+            if (question) {
+                imagesDiv.innerHTML = '';
+                const isSpecial = specialQuestions.includes(selectedQuestion);
+
+                question.images.forEach((image, index) => {
+                    if (isSpecial && index < 3 || !isSpecial && index < 2) {
+                        const imgElement = document.createElement('img');
+                        imgElement.src = image;
+                        imgElement.alt = `Question Image ${index + 1}`; 
+                        imagesDiv.appendChild(imgElement);
+                    }
+                });
+
+                answerElement.textContent = question.answer;
+                imageContainer.style.display = 'block';
+                answerElement.style.display = 'none';
+                startTimer();
+            }
+        });
+    </script>
+</body>
+</html>
